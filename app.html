@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResQNet AI | Hyperlocal Emergency Response Platform</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="css/leaflet.css">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="app-mode">
+
+  <!-- Top Navigation & Role Switcher Bar -->
+  <header class="app-topbar">
+    <div class="app-brand">
+      <div class="brand-icon">🚨</div>
+      <div>
+        <span>ResQNet <span style="color: var(--secondary-blue);">AI</span></span>
+      </div>
+      <span class="badge badge-red" style="margin-left: 0.5rem;">PRODUCTION WORKING MODEL</span>
+    </div>
+
+    <!-- Multi-Role Switcher -->
+    <div class="role-switcher-group">
+      <button class="role-btn emergency-role" data-view="view-citizen">
+        <span>📱</span> Citizen App
+      </button>
+      <button class="role-btn responder-role" data-view="view-responder">
+        <span>🚑</span> Responder MDT
+      </button>
+      <button class="role-btn" data-view="view-admin">
+        <span>🖥️</span> Admin Command
+      </button>
+      <button class="role-btn active split-role" data-view="view-split">
+        <span>🔀</span> Split-Screen Live Demo
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="app-actions">
+      <button class="role-btn" id="open-otp-btn" style="border: 1px solid var(--border-subtle); background: #ffffff;">
+        <span>🔐</span> OTP Login / Profile
+      </button>
+      <button class="role-btn" id="sound-toggle-btn" style="border: 1px solid var(--border-subtle); background: #ffffff;">
+        🔊 Audio
+      </button>
+      <a href="index.html" class="role-btn" style="border: 1px solid var(--border-subtle); color: var(--text-primary); background: #ffffff;">
+        ◂ Pitch Deck
+      </a>
+    </div>
+  </header>
+
+  <!-- Viewport Area -->
+  <main class="app-viewport">
+
+    <!-- ==============================================
+         VIEW 1: CITIZEN MOBILE APP
+         ============================================== -->
+    <div class="app-view" id="view-citizen">
+      <div class="citizen-wrapper">
+        <div class="phone-shell">
+          <div class="phone-screen">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+              <div>
+                <div style="font-weight:800; font-size:1.15rem; color:var(--text-primary);">ResQNet Citizen</div>
+                <div style="font-size:0.75rem; color:var(--secondary-blue); font-family:'JetBrains Mono'; font-weight:600;">
+                  📍 GPS AUTO-LOCKED (±1.5m)
+                </div>
+              </div>
+              <span class="badge badge-red" id="citizen-status-badge">STANDBY</span>
+            </div>
+
+            <!-- Smart Auto SOS Motion Fusion Bar -->
+            <div style="background:#0f172a; border-radius:14px; padding:0.65rem 0.85rem; color:#fff; display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+              <div>
+                <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-family:'JetBrains Mono'; color:#34d399; font-weight:700;">
+                  <span style="width:8px; height:8px; border-radius:50%; background:#34d399; display:inline-block;" class="rec-dot"></span>
+                  SMART AUTO SOS: ACTIVE
+                </div>
+                <div style="font-size:0.65rem; color:#94a3b8; margin-top:1px;">Background: Accel (0.9G) • Gyro • 62 km/h</div>
+              </div>
+              <button id="btn-simulate-crash-impact" style="background:var(--primary-red); border:none; color:#fff; font-size:0.7rem; font-weight:800; padding:0.35rem 0.65rem; border-radius:8px; cursor:pointer;" onclick="window.resqnetEngine.triggerSimulatedAutoCrash()">
+                ⚡ Test Crash (4.8G)
+              </button>
+            </div>
+
+            <!-- Big SOS Panic Button -->
+            <div class="citizen-sos-btn-wrapper">
+              <div class="citizen-big-sos-btn animate-beacon" id="citizen-sos-trigger">
+                <span>SOS</span>
+                <span style="font-size:0.75rem; font-weight:700; margin-top:2px;">TAP TO REPORT</span>
+              </div>
+              <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.75rem; font-weight:500;">
+                One-Tap Automated Emergency Uplink
+              </div>
+            </div>
+
+            <!-- Emergency Reporting Form Details -->
+            <div style="background:#ffffff; border:1px solid var(--border-subtle); border-radius:16px; padding:1rem; box-shadow:var(--shadow-sm); margin-bottom:0.75rem;">
+              <div style="font-size:0.8rem; font-weight:700; color:var(--text-primary); margin-bottom:0.5rem;">SELECT EMERGENCY SCENARIO:</div>
+              <div class="incident-select-row">
+                <div class="incident-type-btn active" data-type="Road Accident">🚗 Road Crash</div>
+                <div class="incident-type-btn" data-type="Cardiac Arrest">❤️ Heart Attack</div>
+                <div class="incident-type-btn" data-type="Building Fire">🔥 Fire Alarm</div>
+                <div class="incident-type-btn" data-type="Assault">🚨 Crime / Assault</div>
+              </div>
+
+              <div style="margin-top:0.5rem;">
+                <label style="display:block; font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-bottom:2px;">Incident Description</label>
+                <input type="text" id="citizen-desc-input" value="Person unconscious after bike accident" style="width:100%; font-size:0.8rem; padding:0.5rem 0.75rem; border-radius:10px; border:1px solid var(--border-subtle); font-family:inherit;">
+              </div>
+
+              <!-- Media Attachment Input -->
+              <div style="margin-top:0.5rem; display:flex; justify-content:space-between; align-items:center;">
+                <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Attach Scene Photo / Video</label>
+                <input type="file" id="citizen-file-input" style="font-size:0.75rem; max-width:180px;">
+              </div>
+            </div>
+
+            <!-- Gemini AI Live Analysis Feed -->
+            <div style="background:#f8fafc; border:1px solid var(--border-subtle); border-radius:16px; padding:1rem; box-shadow:var(--shadow-sm); margin-bottom:0.75rem;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-family:'JetBrains Mono'; color:var(--secondary-blue); margin-bottom:4px; font-weight:700;">
+                <span>✨ GEMINI AI MULTIMODAL TRIAGE</span>
+                <span id="citizen-unit-display" style="color:var(--success-emerald);">AMB-104 ASSIGNED</span>
+              </div>
+              <div style="font-size:0.825rem; color:var(--text-primary); line-height:1.4;" id="citizen-ai-report">
+                Incident classified as <strong>Road Accident</strong>. Predicted Severity: <strong>Critical (96/100)</strong>. Nearest ALS trauma ambulance selected with automated traffic light preemption.
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-top:0.6rem; font-size:0.85rem; border-top:1px solid var(--border-subtle); pt-2;">
+                <span style="color:var(--text-muted);">Estimated Arrival:</span>
+                <strong style="color:var(--secondary-blue); font-size:1.05rem;" id="citizen-eta-display">03m 40s</strong>
+              </div>
+            </div>
+
+            <!-- Live Map Preview inside Phone -->
+            <div class="citizen-map-card" id="citizen-live-map"></div>
+
+            <!-- Emergency Contacts Preview -->
+            <div style="margin-top:0.75rem; background:#ffffff; border:1px solid var(--border-subtle); border-radius:14px; padding:0.85rem;">
+              <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">Emergency Contacts Notified</div>
+              <div style="font-size:0.8rem; display:flex; justify-content:space-between;">
+                <span>Sunita Sharma (Mother)</span>
+                <span style="color:var(--success-emerald); font-weight:700;">✓ SMS Broadcasted</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         VIEW 2: RESPONDER MDT CONSOLE (TABLET)
+         ============================================== -->
+    <div class="app-view" id="view-responder">
+      <div class="responder-wrapper">
+        <!-- Sidebar Briefing -->
+        <div class="responder-sidebar">
+          <div class="responder-header">
+            <div>
+              <div style="font-size:0.75rem; color:var(--secondary-blue); font-family:'JetBrains Mono'; font-weight:700;">FIRST RESPONDER MDT</div>
+              <div style="font-weight:800; font-size:1.15rem; color:var(--text-primary);">Ambulance Unit AMB-104</div>
+            </div>
+            <span class="badge badge-green" id="responder-status-badge">ASSIGNED</span>
+          </div>
+
+          <div style="padding:1.25rem; display:flex; flex-direction:column; gap:1rem;">
+            <!-- Active Incident Card -->
+            <div style="background:#ffffff; border:1px solid var(--border-subtle); border-radius:16px; padding:1.25rem; box-shadow:var(--shadow-sm);">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                  <div style="font-size:0.75rem; color:var(--text-muted); font-family:'JetBrains Mono'; font-weight:600;">ACTIVE DISPATCH</div>
+                  <div style="font-weight:800; font-size:1.2rem; color:var(--text-primary); margin-top:2px;" id="responder-inc-title">INC-7041 - Road Accident</div>
+                  <div style="color:var(--secondary-blue); font-size:0.85rem; font-weight:600; margin-top:4px;" id="responder-inc-location">Jubilee Hills Road 36, Hyderabad</div>
+                </div>
+                <div style="text-align:right;">
+                  <span class="badge badge-red" id="responder-inc-severity">CRITICAL</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Video Evidence Card (Smart Evidence Capture) -->
+            <div style="background:#ffffff; border:1px solid var(--border-subtle); border-radius:16px; padding:1.25rem; box-shadow:var(--shadow-sm);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+                <div style="font-size:0.75rem; color:var(--primary-red); font-family:'JetBrains Mono'; font-weight:700;">
+                  🎥 SMART EVIDENCE (10s LIVE VIDEO)
+                </div>
+                <span class="badge badge-red">LIVE CLIP</span>
+              </div>
+              <div class="evidence-player-card">
+                <img src="assets/hero_banner.jpg" alt="Live Scene Evidence" style="width:100%; height:130px; object-fit:cover;">
+                <div style="position:absolute; bottom:6px; left:8px; display:flex; gap:4px; flex-wrap:wrap;">
+                  <span class="ai-vision-tag">🔥 Fire / Impact 94%</span>
+                  <span class="ai-vision-tag">⚠️ Critical</span>
+                </div>
+              </div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; line-height:1.4;">
+                Visual evidence captured upon SOS trigger. Responders inspect situation before arriving to prepare trauma tools.
+              </p>
+            </div>
+
+            <!-- Gemini Scene Briefing -->
+            <div style="background:#f8fafc; border:1px solid var(--border-subtle); border-radius:16px; padding:1.25rem;">
+              <div style="font-size:0.75rem; color:var(--secondary-blue); font-family:'JetBrains Mono'; font-weight:700;">SCENE INTELLIGENCE (GEMINI AI)</div>
+              <div style="font-size:0.875rem; color:var(--text-secondary); margin-top:6px; line-height:1.5;">
+                Two-wheeler driver unconscious following vehicular impact. Trauma hemorrhage risk. ALS oxygen and spine board pre-authorized.
+              </div>
+            </div>
+
+            <!-- Hospital Destination -->
+            <div style="background:#ffffff; border:1px solid var(--border-subtle); border-radius:16px; padding:1.25rem;">
+              <div style="font-size:0.75rem; color:var(--text-muted); font-family:'JetBrains Mono'; font-weight:600;">DESTINATION HOSPITAL</div>
+              <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem; margin-top:2px;">Care Hospitals Banjara Hills (Trauma ICU)</div>
+              <div style="font-size:0.8rem; color:var(--success-emerald); font-weight:600; margin-top:2px;">✓ Emergency Bed Reserved • Surgeons Alerted</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Map Area -->
+        <div class="responder-content">
+          <div class="responder-map" id="responder-live-map"></div>
+
+          <!-- Telemetry HUD Card -->
+          <div class="responder-telemetry-hud">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+              <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">DYNAMIC NAVIGATION</span>
+              <span class="badge badge-green">TRAFFIC PREEMPTED</span>
+            </div>
+            <div style="font-size:2rem; font-weight:900; color:var(--secondary-blue); font-family:'Outfit';" id="responder-inc-eta">03m 40s</div>
+            <div style="font-size:0.8rem; color:var(--text-secondary); font-weight:500;">Speed: 58 km/h • Green Wave Signals Active</div>
+          </div>
+
+          <!-- 5 Status Transitions (Assigned, En Route, Reached, Treatment Started, Resolved) -->
+          <div class="responder-actions-bar">
+            <button class="status-step-btn" id="btn-status-assigned" onclick="window.resqnetEngine.setResponderStatus('AMB-104', 'Assigned')">1. Assigned</button>
+            <button class="status-step-btn active" id="btn-status-enroute" onclick="window.resqnetEngine.setResponderStatus('AMB-104', 'En Route')">2. En Route</button>
+            <button class="status-step-btn" id="btn-status-reached" onclick="window.resqnetEngine.setResponderStatus('AMB-104', 'Reached')">3. Reached</button>
+            <button class="status-step-btn" id="btn-status-treatment" onclick="window.resqnetEngine.setResponderStatus('AMB-104', 'Treatment Started')">4. Treatment Started</button>
+            <button class="status-step-btn" id="btn-status-resolved" onclick="window.resqnetEngine.setResponderStatus('AMB-104', 'Resolved')">5. Resolved</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         VIEW 3: ADMIN COMMAND CENTER
+         ============================================== -->
+    <div class="app-view" id="view-admin">
+      <div class="admin-wrapper">
+        <!-- Left: Incident Queue -->
+        <div class="admin-left-col">
+          <div style="padding:1.25rem; background:#ffffff; border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:800; font-size:1.1rem; color:var(--text-primary);">Active Incident Queue</div>
+              <div style="font-size:0.75rem; color:var(--text-muted);">Realtime Emergency Log</div>
+            </div>
+            <button class="role-btn emergency-role" id="btn-admin-sim-random" style="font-size:0.75rem; padding:0.35rem 0.75rem;">+ Simulate</button>
+          </div>
+          <div style="padding:1rem;" id="admin-incident-feed">
+            <!-- Dynamically injected incidents -->
+          </div>
+        </div>
+
+        <!-- Center: City Map & Stats -->
+        <div class="admin-center-col">
+          <div class="admin-top-stats">
+            <div class="admin-stat-card">
+              <div>
+                <div style="font-size:0.75rem; color:var(--text-muted); font-family:'JetBrains Mono'; font-weight:600;">ACTIVE INCIDENTS</div>
+                <div style="font-size:1.65rem; font-weight:900; color:var(--primary-red);" id="admin-active-count">3</div>
+              </div>
+              <span style="font-size:1.5rem;">🚨</span>
+            </div>
+
+            <div class="admin-stat-card">
+              <div>
+                <div style="font-size:0.75rem; color:var(--text-muted); font-family:'JetBrains Mono'; font-weight:600;">CRITICAL CASES</div>
+                <div style="font-size:1.65rem; font-weight:900; color:var(--primary-red);" id="admin-critical-count">2</div>
+              </div>
+              <span style="font-size:1.5rem;">⚠️</span>
+            </div>
+
+            <div class="admin-stat-card">
+              <div>
+                <div style="font-size:0.75rem; color:var(--text-muted); font-family:'JetBrains Mono'; font-weight:600;">AVAILABLE FLEET</div>
+                <div style="font-size:1.65rem; font-weight:900; color:var(--success-emerald);" id="admin-idle-fleet">14</div>
+              </div>
+              <span style="font-size:1.5rem;">🚑</span>
+            </div>
+
+            <div class="admin-stat-card">
+              <div>
+                <div style="font-size:0.75rem; color:var(--text-muted); font-family:'JetBrains Mono'; font-weight:600;">AVG RESPONSE TIME</div>
+                <div style="font-size:1.65rem; font-weight:900; color:var(--secondary-blue);" id="admin-elapsed-timer">3m 48s</div>
+              </div>
+              <span style="font-size:1.5rem;">⏱</span>
+            </div>
+          </div>
+
+          <div class="admin-map" id="admin-live-map"></div>
+        </div>
+
+        <!-- Right: Multi-Agency Status & POIs -->
+        <div class="admin-right-col">
+          <div style="padding:1.25rem; background:#ffffff; border-bottom:1px solid var(--border-subtle);">
+            <div style="font-weight:800; font-size:1.1rem; color:var(--text-primary);">Command Analytics</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Multi-Agency Coordination</div>
+          </div>
+
+          <div style="padding:1.25rem; display:flex; flex-direction:column; gap:1rem;">
+            <!-- Admin Live Video Evidence Reel -->
+            <div style="background:#ffffff; border:1px solid var(--border-subtle); border-radius:14px; padding:1rem; box-shadow:var(--shadow-sm);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <strong style="font-size:0.85rem; color:var(--primary-red);">🎥 Smart Evidence Reel (10s)</strong>
+                <span class="badge badge-red">LIVE STREAM</span>
+              </div>
+              <div class="evidence-player-card">
+                <img src="assets/hero_banner.jpg" alt="Admin Video Feed" style="width:100%; height:110px; object-fit:cover;">
+                <div style="position:absolute; bottom:4px; left:6px; display:flex; gap:3px;">
+                  <span class="ai-vision-tag" style="font-size:0.65rem; padding:0.1rem 0.4rem;">🔥 Scene Evidence Verified</span>
+                </div>
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:6px; line-height:1.4;">
+                Gemini Vision Model triaged live clip in 1.2s. Scene classified as high-trauma collision.
+              </div>
+            </div>
+
+            <div style="background:#f8fafc; padding:1rem; border-radius:14px; border:1px solid var(--border-subtle);">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <strong style="font-size:0.85rem;">🚑 Emergency Medical (EMS)</strong>
+                <span class="badge badge-green">ACTIVE</span>
+              </div>
+              <div style="font-size:0.8rem; color:var(--text-secondary);">AMB-104 En Route • 58 km/h</div>
+            </div>
+
+            <div style="background:#f8fafc; padding:1rem; border-radius:14px; border:1px solid var(--border-subtle);">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <strong style="font-size:0.85rem;">🚔 Police Interceptor</strong>
+                <span class="badge badge-blue">CONNECTED</span>
+              </div>
+              <div style="font-size:0.8rem; color:var(--text-secondary);">Traffic Unit 201 clearing Jubilee Hills Rd</div>
+            </div>
+
+            <div style="background:#f8fafc; padding:1rem; border-radius:14px; border:1px solid var(--border-subtle);">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <strong style="font-size:0.85rem;">🏥 Hospital Intake Ready</strong>
+                <span class="badge badge-amber">STANDBY</span>
+              </div>
+              <div style="font-size:0.8rem; color:var(--text-secondary);">Care Hospitals Trauma ICU reserved</div>
+            </div>
+
+            <div style="background:var(--primary-red-light); padding:1rem; border-radius:14px; border:1px solid rgba(229,57,53,0.2);">
+              <div style="font-size:0.75rem; color:var(--primary-red); font-family:'JetBrains Mono'; font-weight:700; margin-bottom:4px;">
+                SPATIOTEMPORAL DEDUPLICATION
+              </div>
+              <div style="font-size:0.8rem; color:var(--text-primary); font-weight:500;">
+                500m geofence active. 14 duplicate calls merged into 1 ticket.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================================
+         VIEW 4: SPLIT-SCREEN REAL-TIME DEMO LAB
+         ============================================== -->
+    <!-- ==============================================
+         VIEW 4: SPLIT-SCREEN REAL-TIME DEMO LAB
+         ============================================== -->
+    <div class="app-view active" id="view-split">
+      <div class="split-wrapper">
+        <!-- Col 1: Citizen Mobile View -->
+        <div class="split-col">
+          <div class="split-header">
+            <span style="color:var(--primary-red); font-weight:800;">📱 CITIZEN VIEW</span>
+            <span class="badge badge-red" id="split-citizen-status-badge">STANDBY</span>
+          </div>
+          <div class="split-body" style="padding:0.85rem; background:#f8fafc; display:flex; flex-direction:column; gap:0.65rem; overflow-y:auto;">
+            
+            <!-- Smart Auto SOS Motion Fusion Bar -->
+            <div style="background:#0f172a; border-radius:14px; padding:0.65rem 0.85rem; color:#fff; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+              <div>
+                <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-family:'JetBrains Mono'; color:#34d399; font-weight:700;">
+                  <span style="width:8px; height:8px; border-radius:50%; background:#34d399; display:inline-block;" class="rec-dot"></span>
+                  SMART AUTO SOS: ACTIVE
+                </div>
+                <div style="font-size:0.65rem; color:#94a3b8; margin-top:1px;">Sensor: 0.9G • Gyro 12° • 62 km/h</div>
+              </div>
+              <button style="background:var(--primary-red); border:none; color:#fff; font-size:0.7rem; font-weight:800; padding:0.35rem 0.65rem; border-radius:8px; cursor:pointer;" onclick="window.resqnetEngine.triggerSimulatedAutoCrash()">
+                ⚡ Test Crash (4.8G)
+              </button>
+            </div>
+
+            <!-- Big SOS Panic Button -->
+            <div style="text-align:center; padding:0.35rem 0;">
+              <div class="citizen-big-sos-btn animate-beacon" onclick="window.resqnetEngine.startSmartEvidenceCapture('Road Accident', 'Person unconscious after bike accident')" style="margin: 0 auto; width: 95px; height: 95px; font-size: 1.6rem; cursor:pointer;">
+                <span>SOS</span>
+                <span style="font-size:0.6rem; font-weight:700; margin-top:1px;">TAP FOR HELP</span>
+              </div>
+              <div style="font-weight:800; color:var(--text-primary); margin-top:0.4rem; font-size:0.9rem;">ONE-TAP SMART SOS</div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">10s Video Capture + Auto GPS Dispatch</div>
+            </div>
+
+            <!-- AI Assigned Responder Card -->
+            <div style="background:#ffffff; border:1px solid var(--border-subtle); border-radius:14px; padding:0.75rem; box-shadow:var(--shadow-sm);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-size:0.7rem; color:var(--secondary-blue); font-family:'JetBrains Mono'; font-weight:700;">AI ASSIGNED UNIT</span>
+                <span class="badge badge-green" id="split-citizen-badge">AMB-104</span>
+              </div>
+              <div style="font-size:0.9rem; color:var(--text-primary); font-weight:800;" id="split-citizen-unit">Ambulance Unit AMB-104 (ALS)</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px; line-height:1.3;" id="split-citizen-ai-text">
+                Gemini Vision Triage: Polytrauma risk. Traffic corridor pre-cleared.
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; padding-top:4px; border-top:1px solid var(--border-subtle);">
+                <span style="font-size:0.72rem; color:var(--text-muted);">Estimated Arrival:</span>
+                <strong style="font-size:0.95rem; color:var(--secondary-blue);" id="split-citizen-eta">03m 40s</strong>
+              </div>
+            </div>
+
+            <!-- Live Citizen Map in Split Col 1 -->
+            <div style="height:175px; border-radius:14px; overflow:hidden; border:1px solid var(--border-subtle); position:relative;" id="split-citizen-map"></div>
+
+          </div>
+        </div>
+
+        <!-- Col 2: Responder MDT View -->
+        <div class="split-col">
+          <div class="split-header">
+            <span style="color:var(--secondary-blue); font-weight:800;">🚑 RESPONDER MDT CONSOLE</span>
+            <div style="display:flex; gap:4px;">
+              <button class="status-step-btn" style="font-size:0.7rem; padding:0.25rem 0.55rem;" onclick="window.resqnetEngine.setResponderStatus('AMB-104', 'Assigned')">Assigned</button>
+              <button class="status-step-btn active" style="font-size:0.7rem; padding:0.25rem 0.55rem;" onclick="window.resqnetEngine.setResponderStatus('AMB-104', 'En Route')">En Route</button>
+              <button class="status-step-btn" style="font-size:0.7rem; padding:0.25rem 0.55rem;" onclick="window.resqnetEngine.setResponderStatus('AMB-104', 'Reached')">Reached</button>
+              <button class="status-step-btn" style="font-size:0.7rem; padding:0.25rem 0.55rem;" onclick="window.resqnetEngine.setResponderStatus('AMB-104', 'Resolved')">Resolved</button>
+            </div>
+          </div>
+          <div class="split-body" style="display:flex; flex-direction:column;">
+            <div style="background:#0f172a; padding:0.4rem 0.75rem; color:#fff; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle);">
+              <span style="font-size:0.7rem; font-family:'JetBrains Mono'; font-weight:700; color:var(--primary-red);">🎥 LIVE EVIDENCE STREAM (10s REEL)</span>
+              <span class="badge badge-red" style="font-size:0.65rem; padding:0.1rem 0.4rem;">CONNECTED</span>
+            </div>
+            <div style="flex:1; min-height:300px; position:relative;" id="split-responder-map"></div>
+          </div>
+        </div>
+
+        <!-- Col 3: Admin Command View -->
+        <div class="split-col">
+          <div class="split-header">
+            <span style="color:var(--text-primary); font-weight:800;">🖥️ CITY DISPATCH COMMAND</span>
+            <button class="role-btn emergency-role" style="font-size:0.7rem; padding:0.2rem 0.55rem;" onclick="window.resqnetEngine.triggerSimulatedAutoCrash()">
+              ⚡ Simulate Incident
+            </button>
+          </div>
+          <div class="split-body" id="split-admin-map"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==============================================
+       OTP LOGIN & USER PROFILE MODAL
+       ============================================== -->
+  <div class="app-modal-overlay" id="otp-modal">
+    <div class="app-modal-card">
+      <button style="position:absolute; top:1.25rem; right:1.25rem; background:transparent; border:none; font-size:1.25rem; cursor:pointer;" onclick="document.getElementById('otp-modal').classList.remove('active')">✕</button>
+
+      <div style="text-align:center; margin-bottom:1.5rem;">
+        <div style="width:48px; height:48px; border-radius:14px; background:var(--secondary-blue-light); color:var(--secondary-blue); font-size:1.5rem; display:flex; align-items:center; justify-content:center; margin:0 auto 0.75rem auto;">
+          🔐
+        </div>
+        <h3 style="font-size:1.25rem; font-weight:800; color:var(--text-primary);">Secure Citizen Login</h3>
+        <p style="font-size:0.825rem; color:var(--text-muted); margin-top:2px;">Enter your phone number for instant OTP verification</p>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:1rem;">
+        <div>
+          <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">Mobile Phone Number</label>
+          <input type="text" id="otp-phone-input" value="+91 98480 22338" style="width:100%; padding:0.65rem 0.85rem; border-radius:10px; border:1px solid var(--border-subtle); font-family:'JetBrains Mono'; font-size:0.9rem;">
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.75rem; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">6-Digit OTP</label>
+          <input type="text" id="otp-code-input" placeholder="123456" maxlength="6" style="width:100%; padding:0.65rem 0.85rem; border-radius:10px; border:1px solid var(--border-subtle); font-family:'JetBrains Mono'; font-size:1.1rem; text-align:center; letter-spacing:0.2em;">
+          <div style="font-size:0.75rem; color:var(--secondary-blue); font-weight:600; margin-top:4px; text-align:center;">Demo Code: 123456</div>
+        </div>
+
+        <button class="role-btn responder-role" style="width:100%; justify-content:center; padding:0.75rem; font-size:0.95rem; margin-top:0.5rem;" onclick="alert('OTP Verified! Citizen authenticated with Firebase / JWT.'); document.getElementById('otp-modal').classList.remove('active');">
+          Verify & Continue ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       SMART EVIDENCE CAPTURE CAMERA VIEWFINDER MODAL
+       ============================================== -->
+  <div class="smart-camera-overlay" id="citizen-camera-overlay">
+    <div class="smart-camera-container">
+      <video id="citizen-camera-stream" autoplay muted playsinline class="camera-stream-video"></video>
+      <img src="assets/hero_banner.jpg" class="camera-fallback-sim" alt="Scene Stream">
+      
+      <div class="camera-hud-top">
+        <div class="rec-indicator">
+          <span class="rec-dot"></span>
+          <span>● REC 10s</span>
+        </div>
+        <div style="font-size: 0.7rem; color: #fff; font-family: 'JetBrains Mono'; background: rgba(0,0,0,0.65); padding: 0.25rem 0.6rem; border-radius: 6px;">
+          📍 GPS AUTO-LOCK: ±1.2m
+        </div>
+      </div>
+
+      <div class="camera-hud-center">
+        <div class="countdown-circle" id="camera-countdown-num">10</div>
+        <div style="font-size: 0.85rem; color: #fff; font-weight: 800; margin-top: 0.6rem; text-shadow: 0 2px 6px rgba(0,0,0,0.9); font-family: 'Outfit';">
+          SMART EVIDENCE CAPTURE
+        </div>
+      </div>
+
+      <div class="camera-hud-bottom">
+        <div style="font-size: 0.85rem; color: #fff; font-weight: 800; font-family: 'JetBrains Mono';" id="camera-status-text">
+          RECORDING SCENE EVIDENCE (10s)...
+        </div>
+        <div style="font-size: 0.725rem; color: #cbd5e1; margin-top: 4px;">
+          Pre-authorized during setup • Uplinks live video to Responders & Gemini AI
+        </div>
+        <div style="margin-top: 0.6rem;">
+          <button onclick="window.resqnetEngine.fastForwardCameraCapture()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 8px; cursor: pointer;">
+            ⏩ Fast-Forward (Instant Dispatch)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================
+       SMART AUTO SOS: ACCIDENT DETECTION MODAL
+       ============================================== -->
+  <div class="smart-auto-sos-overlay" id="smart-auto-sos-modal">
+    <div class="smart-auto-sos-card">
+      <div class="sos-alert-badge">⚠️</div>
+
+      <h2 style="font-size: 1.6rem; font-weight: 900; color: #0f172a; margin: 0 0 0.25rem 0; letter-spacing: -0.02em;">
+        Possible Accident Detected
+      </h2>
+      <p style="font-size: 0.95rem; color: #475569; font-weight: 500; margin: 0;">
+        We detected an unusual impact.
+      </p>
+
+      <!-- Multi-Sensor Telemetry Confirmation -->
+      <div class="sos-telemetry-grid">
+        <div class="sos-telemetry-item">
+          <span class="sos-telemetry-label">IMPACT FORCE</span>
+          <span class="sos-telemetry-value" id="auto-sos-telemetry-g">4.8G</span>
+        </div>
+        <div class="sos-telemetry-item">
+          <span class="sos-telemetry-label">SPEED DROP</span>
+          <span class="sos-telemetry-value" id="auto-sos-telemetry-speed">65 ➔ 0 km/h</span>
+        </div>
+        <div class="sos-telemetry-item">
+          <span class="sos-telemetry-label">ORIENTATION</span>
+          <span class="sos-telemetry-value" id="auto-sos-telemetry-tilt">142° Rollover</span>
+        </div>
+      </div>
+
+      <div style="font-size: 1.25rem; font-weight: 800; color: #1e293b; margin: 0.5rem 0 0.25rem 0;">
+        Are you safe?
+      </div>
+      <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+        Emergency alert will be sent in
+      </p>
+
+      <!-- 60-Second Circular Countdown -->
+      <div class="sos-countdown-dial">
+        <span class="sos-countdown-number" id="auto-sos-countdown-num">60</span>
+      </div>
+      <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+        Seconds Remaining
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="sos-actions-row">
+        <button class="btn-sos-safe" id="btn-auto-sos-safe" onclick="window.resqnetEngine.cancelAutoCrashSafe()">
+          <span style="font-size: 1.2rem;">🟢</span>
+          <span>I'M SAFE</span>
+        </button>
+
+        <button class="btn-sos-help" id="btn-auto-sos-help" onclick="window.resqnetEngine.confirmAutoCrashHelp()">
+          <span style="font-size: 1.2rem;">🔴</span>
+          <span>SEND HELP NOW</span>
+        </button>
+      </div>
+
+      <div style="margin-top: 0.75rem; padding-top: 0.6rem; border-top: 1px dashed rgba(229,57,53,0.3);">
+        <button onclick="window.resqnetEngine.fastForwardAutoCrash()" style="background: transparent; border: 1px solid rgba(229,57,53,0.4); color: #dc2626; border-radius: 8px; font-size: 0.72rem; font-weight: 700; padding: 0.35rem 0.75rem; cursor: pointer;">
+          ⏩ Fast-Forward to 0s (Simulate 60s Unresponsive Timeout)
+        </button>
+      </div>
+
+      <div style="margin-top: 0.85rem; font-size: 0.75rem; color: #64748b; line-height: 1.4;">
+        🔒 <strong>Safety Assurance:</strong> The platform never assumes an accident immediately without verification. If no response occurs, sub-meter GPS and 10s video evidence will transmit to First Responders.
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/leaflet.js"></script>
+  <script src="js/engine.js"></script>
+  <script>
+    document.getElementById('open-otp-btn').addEventListener('click', () => {
+      document.getElementById('otp-modal').classList.add('active');
+    });
+  </script>
+</body>
+</html>
