@@ -229,3 +229,5 @@ npm run dev      # Starts Vite dev server on http://localhost:5173
 1. **Zero-Lag Cross-Tab Synchronization**: Open the Citizen in Tab 1 and the Responder in Tab 2 — tapping SOS immediately sounds the siren in Tab 2 and animates the ambulance on both screens!
 2. **Built-in 5-Minute Pitch Mode**: Dedicated hackathon presenter interface with slide-by-slide countdown timer and judge-facing cues.
 3. **Smart City Production Polish**: Styled in official emergency colors (`#E53935`, `#1565C0`), rounded glassmorphic cards, and zero placeholder text.
+#   R E S Q I T  
+ 
